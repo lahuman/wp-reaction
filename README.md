@@ -11,19 +11,18 @@
 
 ***Screen***
 
-![](./screenshot.png)
-게시물 정보 조회
-
+#### 게시물 정보 조회
 - 게시물 ID를 입력하거나, 게시물의 주소를 넣으면 자동으로 게시물 ID로 변환합니다.
-<hr />
+![](./screenshot.png)
+
+#### 게시물 반응 상세 조회
 ![](./screenshot_1.png)
-게시물 반응 상세 조회
-<hr />
+
+#### 게시물 댓글 정보 조회
 ![](./screenshot_2.png)
-게시물 댓글 정보 조회
-<hr />
+
+#### 게시물 댓글 상세 조회
 ![](./screenshot_3.png)
-게시물 댓글 상세 조회
 
 ## Table of Contents 
 
