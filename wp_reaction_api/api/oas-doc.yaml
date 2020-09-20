@@ -1,0 +1,223 @@
+openapi: 3.0.1
+info:
+  title: 워크 플레이스 반응 확인
+  description: 워크 플레이스의 게시글에 대한 반응을 확인 한다.
+  contact:
+    email: kk.lim@gsshop.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  version: 1.0.0
+tags:
+  - name: reaction
+    description: 반응 확인
+servers:
+  - url: /api
+paths:
+  /postInfo2xls:
+    get:
+      x-router-controller: reactionController
+      tags:
+        - reaction
+      summary: 게시글의 정보 + 반응 정보를 엑셀로 다운로드 한다.
+      description: |
+        게시글의 정보와 반응을 함게 엑셀로 다운로드한다.
+      operationId: postInfo2xls
+      parameters:
+        - in: query
+          name: postId
+          description: 게시글 ID
+          required: true
+          schema:
+            type: string
+            default: "451390832036693_920957698413335"
+      responses:
+        '200':
+          description: 게시글 정보
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: bad input parameter
+          content: {}
+  /postInfo:
+    get:
+      x-router-controller: reactionController
+      tags:
+        - reaction
+      summary: 게시글의 정보 + 반응 정보를 조회 한다.
+      description: |
+        게시글의 정보와 반응을 함게 조회한다.
+      operationId: getPostInfo
+      parameters:
+        - in: query
+          name: postId
+          description: 게시글 ID
+          required: true
+          schema:
+            type: string
+            default: "451390832036693_920957698413335"
+      responses:
+        '200':
+          description: 게시글 정보
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: bad input parameter
+          content: {}
+  /postCommentInfo2xls:
+    get:
+      x-router-controller: reactionController  
+      tags:
+        - reaction
+      summary: 게시글의 코멘트 정보를 엑셀로 변환하여 다운받는다.
+      description: |
+        게시글의 코멘트 정보를 엑셀로 변환하여 다운받는다.
+      operationId: postCommentInfo2xls
+      parameters:
+        - in: query
+          name: postId
+          description: 게시글 ID
+          required: true
+          schema:
+            type: string
+            default: "451390832036693_920957698413335"
+      responses:
+        '200':
+          description: 게시글 코멘트 정보
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: bad input parameter
+          content: {}
+  /postCommentInfo:
+    get:
+      x-router-controller: reactionController  
+      tags:
+        - reaction
+      summary: 게시글의 코멘트 정보를 조회한다.
+      description: |
+        게시글의 코멘트 정보를 조회한다.
+      operationId: getPostCommentInfo
+      parameters:
+        - in: query
+          name: postId
+          description: 게시글 ID
+          required: true
+          schema:
+            type: string
+            default: "451390832036693_920957698413335"
+      responses:
+        '200':
+          description: 게시글 코멘트 정보
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: bad input parameter
+          content: {}
+  /usersPictures:
+    post:
+      x-router-controller: reactionController
+      tags:
+        - reaction
+      summary: 사용자의 프로필 이미지 정보를 호출한다.
+      description: |
+        사용자 프로필 이미지 정보 조회
+      operationId: getUserPictures
+      requestBody:
+        x-name: body
+        description: userId 목록
+        content:
+          application/json:
+            schema:
+              type: array
+              items: 
+                type: string
+        required: true
+      responses:
+        '200':
+          description: 사용자 프로필 사진 정보
+          content:
+            application/json:
+              schema:
+                type: array
+        '400':
+          description: bad input parameter
+          content: {}
+  /login:
+    x-swagger-router-controller: loginController
+    get:
+      tags:
+        - login
+      summary: 사용자 인증을 한다.
+      description: ""
+      operationId: login
+      responses:
+        200:
+          description: UserInfo
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/userInfo"
+  /loginCheck:
+    x-swagger-router-controller: loginController
+    get:
+      tags:
+        - login
+      summary: 로그인 상태를 확인한다.
+      description: ""
+      operationId: loginCheck
+      responses:
+        200:
+          description: UserInfo
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/userInfo"
+  /logout:
+    x-swagger-router-controller: loginController
+    post:
+      tags:
+        - login
+      summary: 로그 아웃 한다.
+      description: ""
+      operationId: logout
+      responses:
+        200:
+          description: "처리 결과"
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/response"
+components:
+  schemas:
+    IssueKwdPrd:
+      required:
+        - prd_cd
+      type: object
+      properties:
+        prd_cd:
+          type: integer
+          example: 58180119
+        prd_nm:
+          type: string
+          example: 히말라야 언더 아이크림 15ml x2
+        issue_kwd:
+          type: string
+          example: '소음(19),안맞아(1),제조년월(1)'
+        issue_cnt:
+          type: integer
+          example: 21

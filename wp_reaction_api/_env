@@ -1,0 +1,4 @@
+NODE_ENV=deploment
+SERVER_PORT=10010
+ANALYTICS_ACCESS_KEY=
+WP_API_HOST=https://graph.facebook.com
