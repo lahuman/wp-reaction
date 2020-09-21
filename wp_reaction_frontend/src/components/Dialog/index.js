@@ -95,7 +95,7 @@ export default function CustomizedDialogs({ open, setOpen, data }) {
 }
 
 function AvatarList({ id, name, picture }) {
-  return <Grid item xs={2} style={{ textAlign: 'center' }}><a href={`${process.env.REACT_APP_WP_URL}/${id}`} style={{textDecoration: 'none', color: 'rgba(0, 0, 0, 0.87)'}} target="_blank" rel="noopener noreferrer">
+  return <Grid key={id} item xs={2} style={{ textAlign: 'center' }}><a href={`${process.env.REACT_APP_WP_URL}/${id}`} style={{textDecoration: 'none', color: 'rgba(0, 0, 0, 0.87)'}} target="_blank" rel="noopener noreferrer">
     <Avatar key={id} alt={name} src={picture} style={{ marginLeft: '1.2rem' }} />
     <Typography variant="caption" display="block" gutterBottom>{name}</Typography></a>
   </Grid>;
