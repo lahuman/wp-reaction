@@ -13,16 +13,19 @@ export const INITIALIZE_DATA = {
 
 export const reactionReducer = (state, action) => {
   switch (action.type) {
-    case 'RESET':
-      return { ...INITIALIZE_DATA };
+    case 'INITIALIZE':
+      return { ...INITIALIZE_DATA, loading: true };
     case "POST_MODAL":
       return {
         ...state,
+        loading: false,
+        modal: true,
         popupData: { title: `${state.postReactionData[action.target.point].emotion} 를 누른 사람`, avatars: action.avatars.map(a => ({ picture: a.picture.data.url, id: a.id, name: a.name })) }
       };
     case 'SELECT_POST_INFO':
       return {
         ...state,
+        loading: false,
         postInfo: action.data,
         postReactionData: (action.data.reactions
           && action.data.reactions.data.reduce((acc, cur) => {
@@ -61,6 +64,8 @@ export const reactionReducer = (state, action) => {
     case "COMMENT_MODAL":
       return {
         ...state,
+        loading: false,
+        modal: true,
         popupData: {
           title: `${state.commentReactionData[action.target.point].name}`,
           avatars: (action.selectedCommentInfo.reactions && action.selectedCommentInfo.reactions.data.map(a => ({ id: a.id, name: a.name, picture: action.avatarsPicture.filter(p => p.id === a.id)[0].picture.data.url }))) || [],
@@ -70,6 +75,7 @@ export const reactionReducer = (state, action) => {
     case "SELECT_COMMENT_INFO":
       return {
         ...state,
+        loading: false,
         postComment: action.data,
         commentReactionData: (action.data && action.data.reduce((acc, cur) => {
           acc.push({
@@ -85,18 +91,15 @@ export const reactionReducer = (state, action) => {
           return acc;
         }, []).sort((a, b) => a.reactions - b.reactions)) || []
       };
-    case "UPDAET_LOADDING":
+    case "IS_LOADING":
       return {
         ...state,
-        loading: action.loading
-      };
-    case "MODAL_DATA":
-      return {
-
+        loading: true
       };
     case "MODAL":
       return {
         ...state,
+        loading: false,
         modal: action.modal
       };
     default:
