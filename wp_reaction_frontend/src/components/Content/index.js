@@ -104,12 +104,11 @@ export default function Content() {
 
   const handleChange = async (event, newValue) => {
     setValue(newValue);
-    dispatch({ type: 'UPDAET_LOADDING', loading: true });
+    dispatch({ type: 'IS_LOADING'});
 
     const { data } = await getPostComment({ postId });
 
     dispatch({ type: 'SELECT_COMMENT_INFO', data });
-    dispatch({ type: 'UPDAET_LOADDING', loading: false });
   };
 
   const handleChangeIndex = (index) => {
@@ -121,19 +120,17 @@ export default function Content() {
       setIsWrong(true);
       return;
     }
-    dispatch({ type: 'RESET' });
-    dispatch({ type: 'UPDAET_LOADDING', loading: true });
+    dispatch({ type: 'INITIALIZE' });
     history.push(`/${postId}`);
     const data = await getPostInfo({ postId });
     dispatch({ type: 'SELECT_POST_INFO', data });
-    dispatch({ type: 'UPDAET_LOADDING', loading: false });
   }
 
   const clickChart = async (targets, type = "post") => {
     if (!targets || targets.length === 0) return;
     const target = targets[0];
     setSelection([target]);
-    dispatch({ type: 'UPDAET_LOADDING', loading: true });
+    dispatch({ type: 'IS_LOADING'});
     
     if (type === 'post') {
 
@@ -149,8 +146,7 @@ export default function Content() {
 
       dispatch({ type: 'COMMENT_MODAL', avatarsPicture, selectedCommentInfo: commentInfo, target });
     }
-    dispatch({ type: 'MODAL', modal: true });
-    dispatch({ type: 'UPDAET_LOADDING', loading: false });
+    
   }
 
 
@@ -238,7 +234,7 @@ export default function Content() {
         </Typography>
         }
       </Container>
-      <Dialog open={state.modal} setOpen={(isOpen) => dispatch({ type: 'MODAL', modal: false })} data={state.popupData} />
+      <Dialog open={state.modal} setOpen={(isOpen) => dispatch({ type: 'MODAL', modal: isOpen })} data={state.popupData} />
     </React.Fragment>);
 
 }
