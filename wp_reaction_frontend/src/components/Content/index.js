@@ -14,15 +14,15 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import SwipeableViews from 'react-swipeable-views';
 import { useParams, useHistory } from 'react-router-dom';
-import GetAppIcon from '@material-ui/icons/GetApp';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { getPostInfo, getPostComment, getUserPictures } from '../../apiInstance';
 import Dialog from '../Dialog';
 import PostUI from '../PostUI';
 import PostChart from './PostChart';
 import CommentChart from './CommentChart';
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import {reactionReducer, INITIALIZE_DATA} from './reactionReducer';
 
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -89,44 +89,27 @@ export default function Content() {
   let { postId: pathPostId } = useParams();
   let history = useHistory();
   const classes = useStyles();
-  const [loading, setLoading] = React.useState(false);
-  const [open, setOpen] = React.useState(false);
-  const [popupData, setPopupData] = React.useState({});
-  const [postInfo, setPostInfo] = React.useState(null);
-  const [postComment, setPostComment] = React.useState(null);
-  const [postReactionData, setPostReactionData] = React.useState([]);
-  const [commentReactionData, setCommentReactionData] = React.useState([]);
+
   const [postId, setPostId] = React.useState(pathPostId || null);
   const [isWorng, setIsWrong] = React.useState(false);
   const [selection, setSelection] = React.useState([]);
   const [value, setValue] = React.useState(0);
 
+  const [state, dispatch] = React.useReducer(reactionReducer, { ...INITIALIZE_DATA });
 
   React.useEffect(() => {
     if (!pathPostId) return;
-
     searchPostInfoAction();
   }, []);
+
   const handleChange = async (event, newValue) => {
     setValue(newValue);
-    setLoading(true);
-    setSelection([]);
+    dispatch({ type: 'UPDAET_LOADDING', loading: true });
+
     const { data } = await getPostComment({ postId });
-    setPostComment(data);
-    setCommentReactionData((data && data.reduce((acc, cur) => {
-      acc.push({
-        id: cur.id, name: `${cur.from.name}_${cur.id}`, message: cur.message,
-        LIKE: (cur.reactions && cur.reactions.data.filter(r => r.type === 'LIKE').length) || 0,
-        LOVE: (cur.reactions && cur.reactions.data.filter(r => r.type === 'LOVE').length) || 0,
-        HAHA: (cur.reactions && cur.reactions.data.filter(r => r.type === 'HAHA').length) || 0,
-        WOW: (cur.reactions && cur.reactions.data.filter(r => r.type === 'WOW').length) || 0,
-        SAD: (cur.reactions && cur.reactions.data.filter(r => r.type === 'SAD').length) || 0,
-        ANGRY: (cur.reactions && cur.reactions.data.filter(r => r.type === 'ANGRY').length) || 0,
-        reactions: (cur.reactions && cur.reactions.data.length) || 0,
-      });
-      return acc;
-    }, []).sort((a, b) => a.reactions - b.reactions)) || []);
-    setLoading(false);
+
+    dispatch({ type: 'SELECT_COMMENT_INFO', data });
+    dispatch({ type: 'UPDAET_LOADDING', loading: false });
   };
 
   const handleChangeIndex = (index) => {
@@ -134,84 +117,46 @@ export default function Content() {
   };
 
   const searchPostInfoAction = async () => {
-
     if (!POST_ID_REGEX.test(postId)) {
       setIsWrong(true);
       return;
     }
-    setLoading(true);
+    dispatch({ type: 'RESET' });
+    dispatch({ type: 'UPDAET_LOADDING', loading: true });
     history.push(`/${postId}`);
-    setIsWrong(false);
-    setValue(0);
-    setSelection([]);
-    setPostComment(null);
-    setPostReactionData([]);
     const data = await getPostInfo({ postId });
-    setPostInfo(data);
-    setPostReactionData((data.reactions
-      && data.reactions.data.reduce((acc, cur) => {
-        switch (cur.type) {
-          case "LIKE":
-            acc[0].count += 1;
-            break;
-          case "LOVE":
-            acc[1].count += 1;
-            break;
-          case "HAHA":
-            acc[2].count += 1;
-            break;
-          case "WOW":
-            acc[3].count += 1;
-            break;
-          case "SAD":
-            acc[4].count += 1;
-            break;
-          case "ANGRY":
-            acc[5].count += 1;
-            break;
-          default:
-            console.log(cur.type);
-        }
-        return acc;
-      }, [
-        { emotion: 'LIKE', count: 0 },
-        { emotion: 'LOVE', count: 0 },
-        { emotion: 'HAHA', count: 0 },
-        { emotion: 'WOW', count: 0 },
-        { emotion: 'SAD', count: 0 },
-        { emotion: 'ANGRY', count: 0 },
-      ]).sort((a, b) => a.count - b.count)) || []);
-    setLoading(false);
+    dispatch({ type: 'SELECT_POST_INFO', data });
+    dispatch({ type: 'UPDAET_LOADDING', loading: false });
   }
 
   const clickChart = async (targets, type = "post") => {
     if (!targets || targets.length === 0) return;
     const target = targets[0];
     setSelection([target]);
-    setLoading(true);
+    dispatch({ type: 'UPDAET_LOADDING', loading: true });
+    
     if (type === 'post') {
-      const avatars = await getUserPictures({ userIdList: postInfo.reactions.data.filter(p => p.type === postReactionData[target.point].emotion).map(r => r.id) });
-      setPopupData({ title: `${postReactionData[target.point].emotion} 를 누른 사람`, avatars: avatars.map(a => ({ picture: a.picture.data.url, id: a.id, name: a.name })) });
+
+      const avatars = await getUserPictures({ userIdList: state.postInfo.reactions.data.filter(p => p.type === state.postReactionData[target.point].emotion).map(r => r.id) });
+      dispatch({ type: 'POST_MODAL', avatars, target });
+
     } else {
-      const commentInfo = postComment.filter(c => c.id === commentReactionData[target.point].id)[0];
+      const commentInfo = state.postComment.filter(c => c.id === state.commentReactionData[target.point].id)[0];
       let userIdList = (commentInfo.reactions && commentInfo.reactions.data.map(r => r.id)) || [];
       userIdList.push(commentInfo.from.id);
       let avatarsPicture = await getUserPictures({ userIdList });
       avatarsPicture = (avatarsPicture && avatarsPicture) || [];
-      console.log(avatarsPicture.filter(p => p.id === commentInfo.from.id)[0].picture.data.url)
-      setPopupData({
-        title: `${commentReactionData[target.point].name}`,
-        avatars: (commentInfo.reactions && commentInfo.reactions.data.map(a => ({ id: a.id, name: a.name, picture: avatarsPicture.filter(p => p.id === a.id)[0].picture.data.url }))) || [],
-        picture: avatarsPicture.filter(p => p.id === commentInfo.from.id)[0].picture.data.url, commentInfo
-      });
+
+      dispatch({ type: 'COMMENT_MODAL', avatarsPicture, selectedCommentInfo: commentInfo, target });
     }
-    setOpen(true);
-    setLoading(false);
+    dispatch({ type: 'MODAL', modal: true });
+    dispatch({ type: 'UPDAET_LOADDING', loading: false });
   }
+
 
   return (
     <React.Fragment>
-      <Backdrop className={classes.backdrop} open={loading} >
+      <Backdrop className={classes.backdrop} open={state.loading} >
         <CircularProgress color="inherit" />
       </Backdrop>
       <Container maxWidth="lg" component="main" className={classes.heroContent}>
@@ -241,14 +186,14 @@ export default function Content() {
         </Grid>
       </Container>
       <Container maxWidth="lg" component="main">
-        {(postInfo
+        {(state.postInfo
           &&
           <React.Fragment>
-            {(postInfo.error && postInfo.error.message) ||
+            {(state.postInfo.error && state.postInfo.error.message) ||
               <React.Fragment>
                 {/* postInfo.picture && 정상 호출 되었을 경우 처리  */}
                 <Card className={classes.root}>
-                  <PostUI id={postInfo.from.id} postId={postInfo.id} picture={postInfo.picture} name={postInfo.from.name} created_time={postInfo.created_time} message={postInfo.message} reactionCount={postInfo.reactions.data.length} />
+                  <PostUI id={state.postInfo.from.id} postId={state.postInfo.id} picture={state.postInfo.picture} name={state.postInfo.from.name} created_time={state.postInfo.created_time} message={state.postInfo.message} reactionCount={state.postInfo.reactions.data.length} />
                   <CardContent>
                     <Tabs
                       value={value}
@@ -268,19 +213,19 @@ export default function Content() {
                     >
                       <TabPanel index={0} value={value}>
                         <Button variant="outlined" size="large" color="primary" onClick={() => {
-                          window.location.href=`${process.env.REACT_APP_API}/postInfo2xls?postId=${postId}`;
+                          window.location.href = `${process.env.REACT_APP_API}/postInfo2xls?postId=${postId}`;
                         }}>
                           게시글 반응정보 Excel 다운받기
                         </Button>
-                        <PostChart postReactionData={postReactionData} clickChart={clickChart} selection={selection} />
+                        <PostChart postReactionData={state.postReactionData} clickChart={clickChart} selection={selection} />
                       </TabPanel>
                       <TabPanel index={1} value={value}>
-                      <Button variant="outlined" size="large" color="primary" onClick={() => {
-                          window.location.href=`${process.env.REACT_APP_API}/postCommentInfo2xls?postId=${postId}`;
+                        <Button variant="outlined" size="large" color="primary" onClick={() => {
+                          window.location.href = `${process.env.REACT_APP_API}/postCommentInfo2xls?postId=${postId}`;
                         }}>
                           게시글의 댓글에 대한 반응정보 Excel 다운받기
                         </Button>
-                        <CommentChart commentReactionData={commentReactionData} clickChart={clickChart} selection={selection} />
+                        <CommentChart commentReactionData={state.commentReactionData} clickChart={clickChart} selection={selection} />
                       </TabPanel>
                     </SwipeableViews>
                   </CardContent>
@@ -293,7 +238,7 @@ export default function Content() {
         </Typography>
         }
       </Container>
-      <Dialog open={open} setOpen={setOpen} data={popupData} />
+      <Dialog open={state.modal} setOpen={(isOpen) => dispatch({ type: 'MODAL', modal: false })} data={state.popupData} />
     </React.Fragment>);
 
 }
