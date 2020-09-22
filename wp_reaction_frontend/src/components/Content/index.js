@@ -119,6 +119,7 @@ export default function Content() {
       setIsWrong(true);
       return;
     }
+    setIsWrong(false);
     dispatch({ type: 'INITIALIZE' });
     history.push(`/${postId}`);
     const data = await getPostInfo({ postId, addAttach });
