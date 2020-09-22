@@ -35,12 +35,12 @@ const legendLabelBase = ({ classes, ...restProps }) => (
 const Label = withStyles(legendLabelStyles, { name: 'LegendLabel' })(legendLabelBase);
 
 
-export default React.memo(({commentReactionData, clickChart, selection}) => {
+export default React.memo(({ commentReactionData, clickChart, selection }) => {
 
   return <Chart
     data={commentReactionData}
     rotated
-    height={commentReactionData.length * 20 < 500 ? 500 : commentReactionData.length * 20}
+    height={commentReactionData.length * 30 < 800 ? 800 : commentReactionData.length * 30}
   >
     <ArgumentAxis />
     <ValueAxis />
