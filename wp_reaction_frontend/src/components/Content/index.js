@@ -16,13 +16,16 @@ import SwipeableViews from 'react-swipeable-views';
 import { useParams, useHistory } from 'react-router-dom';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+
 
 import { getPostInfo, getPostComment, getUserPictures } from '../../apiInstance';
 import Dialog from '../Dialog';
 import PostUI from '../PostUI';
 import PostChart from './PostChart';
 import CommentChart from './CommentChart';
-import {reactionReducer, INITIALIZE_DATA} from './reactionReducer';
+import { reactionReducer, INITIALIZE_DATA } from './reactionReducer';
 
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -91,28 +94,24 @@ export default function Content() {
   const classes = useStyles();
 
   const [postId, setPostId] = React.useState(pathPostId || null);
+  const [addAttach, setAddAttach] = React.useState(true)
   const [isWorng, setIsWrong] = React.useState(false);
-  const [selection, setSelection] = React.useState([]);
-  const [value, setValue] = React.useState(0);
 
   const [state, dispatch] = React.useReducer(reactionReducer, { ...INITIALIZE_DATA });
 
   React.useEffect(() => {
     if (!pathPostId) return;
+
     searchPostInfoAction();
   }, []);
 
   const handleChange = async (event, newValue) => {
-    setValue(newValue);
-    dispatch({ type: 'IS_LOADING'});
-
-    const { data } = await getPostComment({ postId });
-
-    dispatch({ type: 'SELECT_COMMENT_INFO', data });
-  };
-
-  const handleChangeIndex = (index) => {
-    setValue(index);
+    dispatch({ type: 'CHANGE_TAB', value: newValue });
+    if(newValue === 1){
+      dispatch({ type: 'IS_LOADING' });
+      const { data } = await getPostComment({ postId, addAttach });
+      dispatch({ type: 'SELECT_COMMENT_INFO', data });
+    }
   };
 
   const searchPostInfoAction = async () => {
@@ -122,16 +121,16 @@ export default function Content() {
     }
     dispatch({ type: 'INITIALIZE' });
     history.push(`/${postId}`);
-    const data = await getPostInfo({ postId });
+    const data = await getPostInfo({ postId, addAttach });
     dispatch({ type: 'SELECT_POST_INFO', data });
   }
 
   const clickChart = async (targets, type = "post") => {
     if (!targets || targets.length === 0) return;
     const target = targets[0];
-    setSelection([target]);
-    dispatch({ type: 'IS_LOADING'});
-    
+
+    dispatch({ type: 'CHART_SELECTION', selection: [target] });
+
     if (type === 'post') {
 
       const avatars = await getUserPictures({ userIdList: state.postInfo.reactions.data.filter(p => p.type === state.postReactionData[target.point].emotion).map(r => r.id) });
@@ -146,7 +145,7 @@ export default function Content() {
 
       dispatch({ type: 'COMMENT_MODAL', avatarsPicture, selectedCommentInfo: commentInfo, target });
     }
-    
+
   }
 
 
@@ -177,6 +176,18 @@ export default function Content() {
 
           </Grid>
           <Grid item >
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={addAttach}
+                  onChange={(e) => setAddAttach(e.target.checked)}
+                  color="primary"
+                />
+              }
+              label="첨부 추가(중복발생)"
+            />
+          </Grid>
+          <Grid item >
             <Button variant="contained" color="primary" onClick={() => searchPostInfoAction()}>조회</Button>
           </Grid>
         </Grid>
@@ -189,10 +200,10 @@ export default function Content() {
               <React.Fragment>
                 {/* postInfo.picture && 정상 호출 되었을 경우 처리  */}
                 <Card className={classes.root}>
-                  <PostUI id={state.postInfo.from.id} postId={state.postInfo.id} picture={state.postInfo.picture} name={state.postInfo.from.name} created_time={state.postInfo.created_time} message={state.postInfo.message} reactionCount={state.postInfo.reactions.data.length} />
+                  <PostUI id={state.postInfo.from.id} postId={state.postInfo.id} picture={state.postInfo.picture} name={state.postInfo.from.name} created_time={state.postInfo.created_time} message={state.postInfo.message} reactionCount={(state.postInfo.reactions && state.postInfo.reactions.data.length || 0)} />
                   <CardContent>
                     <Tabs
-                      value={value}
+                      value={state.value}
                       onChange={handleChange}
                       indicatorColor="primary"
                       textColor="primary"
@@ -203,25 +214,23 @@ export default function Content() {
                       <Tab label="댓글 반응" />
                     </Tabs>
                     <SwipeableViews
-                      // axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-                      index={value}
-                      onChangeIndex={handleChangeIndex}
+                      index={state.value}
                     >
-                      <TabPanel index={0} value={value}>
+                      <TabPanel index={0} value={state.value}>
                         <Button variant="outlined" size="large" color="primary" onClick={() => {
-                          window.location.href = `${process.env.REACT_APP_API}/postInfo2xls?postId=${postId}`;
+                          window.location.href = `${process.env.REACT_APP_API}/postInfo2xls?postId=${postId}&addAttach=${addAttach ? "Y" : "N"}`;
                         }}>
                           게시글 반응정보 Excel 다운받기
                         </Button>
-                        <PostChart postReactionData={state.postReactionData} clickChart={clickChart} selection={selection} />
+                        <PostChart postReactionData={state.postReactionData} clickChart={clickChart} selection={state.selection} />
                       </TabPanel>
-                      <TabPanel index={1} value={value}>
+                      <TabPanel index={1} value={state.value}>
                         <Button variant="outlined" size="large" color="primary" onClick={() => {
-                          window.location.href = `${process.env.REACT_APP_API}/postCommentInfo2xls?postId=${postId}`;
+                          window.location.href = `${process.env.REACT_APP_API}/postCommentInfo2xls?postId=${postId}&addAttach=${addAttach ? "Y" : "N"}`;
                         }}>
                           게시글의 댓글에 대한 반응정보 Excel 다운받기
                         </Button>
-                        <CommentChart commentReactionData={state.commentReactionData} clickChart={clickChart} selection={selection} />
+                        <CommentChart commentReactionData={state.commentReactionData} clickChart={clickChart} selection={state.selection} />
                       </TabPanel>
                     </SwipeableViews>
                   </CardContent>

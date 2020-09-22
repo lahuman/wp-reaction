@@ -97,10 +97,23 @@ export const reactionReducer = (state, action) => {
         loading: true
       };
     case "MODAL":
+      console.log(action.modal)
       return {
         ...state,
         loading: false,
-        modal: action.modal
+        modal: action.modal,
+        selection: action.modal?action.selection:[]
+      };
+    case "CHART_SELECTION":
+      return {
+        ...state,
+        loading: true,
+        selection: action.selection
+      };
+    case "CHANGE_TAB":
+      return {
+        ...state,
+        value: action.value
       };
     default:
       return state;

@@ -31,6 +31,13 @@ paths:
           schema:
             type: string
             default: "451390832036693_920957698413335"
+        - in: query
+          name: addAttach
+          description: 첨부파일 포함여부
+          required: false
+          schema:
+            type: string
+            default: "Y"
       responses:
         '200':
           description: 게시글 정보
@@ -58,6 +65,13 @@ paths:
           schema:
             type: string
             default: "451390832036693_920957698413335"
+        - in: query
+          name: addAttach
+          description: 첨부파일 포함여부
+          required: false
+          schema:
+            type: string
+            default: "Y"
       responses:
         '200':
           description: 게시글 정보
@@ -85,6 +99,13 @@ paths:
           schema:
             type: string
             default: "451390832036693_920957698413335"
+        - in: query
+          name: addAttach
+          description: 첨부파일 포함여부
+          required: false
+          schema:
+            type: string
+            default: "Y"
       responses:
         '200':
           description: 게시글 코멘트 정보
@@ -112,6 +133,13 @@ paths:
           schema:
             type: string
             default: "451390832036693_920957698413335"
+        - in: query
+          name: addAttach
+          description: 첨부파일 포함여부
+          required: false
+          schema:
+            type: string
+            default: "Y"
       responses:
         '200':
           description: 게시글 코멘트 정보
