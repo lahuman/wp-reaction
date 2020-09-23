@@ -46,7 +46,7 @@
 ### Backend
 
 - [Oas 3.0](https://swagger.io/specification/) 기반으로 작성되었습니다.
-- PATH : **report_backend**
+- PATH : **wp_reaction_api**
 
 > .env 설정은 _env 파일을 .env로 변경하여서 Key에 알맞은 값을 설정 하면 됩니다.
 또는 아래 샘플을 이용하셔요.
@@ -71,7 +71,7 @@ $ npm run start
 ### Frontend
 
 - [ReactJS](https://reactjs.org/)로 작성되어 있습니다.
-- PATH : **report_frontend**
+- PATH : **wp_reaction_frontend**
 
 > .env 설정은 _env 파일을 .env로 변경하여서 Key에 알맞은 값을 설정 하면 됩니다.
 또는 아래 샘플을 이용하셔요.
