@@ -126,7 +126,7 @@ module.exports.postCommentInfo2xls = async (req, res, next) => {
       id: r.from.id,
       name: r.from.name,
       message: r.message,
-      reaction: (r.reaction && r.reaction.data.length) || 0
+      reaction: (r.reactions && r.reactions.data.length) || 0
     })) || []);
   } catch (e) {
     res.status(500).send({ error: { message: e.toString() } });
