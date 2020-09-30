@@ -16,7 +16,7 @@ app.use(require('json2xls').middleware);
 app.use(
   cors({
     origin: [
-      'http://localhost:3000',
+      process.env.ORIGIN_URL || 'http://localhost:3000',
       'http://localhost:10010',
     ],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",

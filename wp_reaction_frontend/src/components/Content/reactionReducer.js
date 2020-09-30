@@ -22,6 +22,13 @@ export const reactionReducer = (state, action) => {
         modal: true,
         popupData: { title: `${state.postReactionData[action.target.point].emotion} 를 누른 사람`, avatars: action.avatars.map(a => ({ picture: a.picture.data.url, id: a.id, name: a.name })) }
       };
+    case "WINNER_MODAL":
+      return {
+        ...state,
+        loading: false,
+        modal: true,
+        popupData: { title: `:: 당첨자 목록 :: - 1등부터 순서대로`, avatars: action.avatars.map(a => ({ picture: a.picture.data.url, id: a.id, name: a.name })) }
+      };
     case 'SELECT_POST_INFO':
       return {
         ...state,

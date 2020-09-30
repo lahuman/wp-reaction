@@ -52,12 +52,14 @@
 또는 아래 샘플을 이용하셔요.
 ANALYTICS_ACCESS_KEY는 workplace 관리자 화면에서 생성한 맞춤 통합의 토큰 값입니다
 해당 통합은 게시물, 댓글 사용자의 정보를 조회하는 권한을 주어야 합니다.
+cors 설정이 필요할 경우(BACKEND/FRONTEND가 다른 경우) ```ORIGIN_URL```에 FRONTEND 서버 주소를 넣어주세요.
 
 ```
 NODE_ENV=deploment
 SERVER_PORT=10010
 ANALYTICS_ACCESS_KEY=
 WP_API_HOST=https://graph.facebook.com
+ORIGIN_URL=
 ```
 
 > 실행
@@ -129,6 +131,10 @@ $ docker run -p 8888:80 --rm wp-reaction:1.0
 ---
 
 ## Version
+
+- v1.2 : 추첨 기능 추가
+    + 반응 / 댓글 기준으로 추첨 
+    + 댓글 차트에서 이름 라벨 클릭시 상세 보기 
 
 - v1.1 : 게시글과 댓글 통합해서 보기
     + 게시글에 첨부된 반응 함께 보기 기능 추가
