@@ -34,8 +34,44 @@ const legendLabelBase = ({ classes, ...restProps }) => (
 );
 const Label = withStyles(legendLabelStyles, { name: 'LegendLabel' })(legendLabelBase);
 
+const labelSelector = '#center-axis-container > div:nth-child(1) > svg > g > text';
 
 export default React.memo(({ commentReactionData, clickChart, selection }) => {
+
+
+  const labelClickEvent = (idx) => () => {
+    clickChart([{point:idx}], 'comment');
+  }
+  
+  const appendLabelEvent = (labelSize) => {
+    const innerLabelSize = labelSize;
+    setTimeout(() => {
+      const labelElementList = document.querySelectorAll(labelSelector);
+      if (innerLabelSize !== labelElementList.length) {
+        appendLabelEvent(innerLabelSize);
+      } else {
+        labelElementList.forEach((el, idx) => {
+          el.setAttribute('style', 'cursor:pointer');
+          el.addEventListener('click', labelClickEvent(idx), false);
+        });
+      }
+    }, 1000);
+  }
+
+  
+  React.useEffect(() => {
+    if (commentReactionData.length === 0) {
+      return;
+    }
+
+    appendLabelEvent(commentReactionData.length);
+
+    return () => {
+      document.querySelectorAll(labelSelector).forEach((el, idx) => {
+        el.removeEventListener('click', labelClickEvent(idx), false);
+      });
+    }
+  }, [commentReactionData]);
 
   return <Chart
     data={commentReactionData}

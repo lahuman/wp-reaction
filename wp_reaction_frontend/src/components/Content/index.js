@@ -26,6 +26,7 @@ import PostUI from '../PostUI';
 import PostChart from './PostChart';
 import CommentChart from './CommentChart';
 import { reactionReducer, INITIALIZE_DATA } from './reactionReducer';
+import ButtonGroups from './ButtonGroups';
 
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -107,7 +108,7 @@ export default function Content() {
 
   const handleChange = async (event, newValue) => {
     dispatch({ type: 'CHANGE_TAB', value: newValue });
-    if(newValue === 1){
+    if (newValue === 1) {
       dispatch({ type: 'IS_LOADING' });
       const { data } = await getPostComment({ postId, addAttach });
       dispatch({ type: 'SELECT_COMMENT_INFO', data });
@@ -126,7 +127,11 @@ export default function Content() {
     dispatch({ type: 'SELECT_POST_INFO', data });
   }
 
-  const clickChart = async (targets, type = "post") => {
+  const drawLotsWinnerEvent = async (winningList) => {
+    const avatars = await getUserPictures({ userIdList: winningList });
+    dispatch({ type: 'WINNER_MODAL', avatars });
+  }
+  const clickChart = async (targets, type = "post" ) => {
     if (!targets || targets.length === 0) return;
     const target = targets[0];
 
@@ -137,7 +142,7 @@ export default function Content() {
       const avatars = await getUserPictures({ userIdList: state.postInfo.reactions.data.filter(p => p.type === state.postReactionData[target.point].emotion).map(r => r.id) });
       dispatch({ type: 'POST_MODAL', avatars, target });
 
-    } else {
+    } else if (type === 'comment') {
       const commentInfo = state.postComment.filter(c => c.id === state.commentReactionData[target.point].id)[0];
       let userIdList = (commentInfo.reactions && commentInfo.reactions.data.map(r => r.id)) || [];
       userIdList.push(commentInfo.from.id);
@@ -145,6 +150,8 @@ export default function Content() {
       avatarsPicture = (avatarsPicture && avatarsPicture) || [];
 
       dispatch({ type: 'COMMENT_MODAL', avatarsPicture, selectedCommentInfo: commentInfo, target });
+    }else if(type === 'drawlots'){
+  
     }
 
   }
@@ -165,7 +172,6 @@ export default function Content() {
 
             }} onChange={(e) => {
               let pUrl = e.target.value.replace(`${process.env.REACT_APP_WP_URL}`, '');
-              console.log(pUrl)
               const vals = pUrl.match(POST_URL);
               if (vals && vals.length > 2) {
                 setPostId(`${vals[1]}_${vals[2]}`);
@@ -218,19 +224,13 @@ export default function Content() {
                       index={state.value}
                     >
                       <TabPanel index={0} value={state.value}>
-                        <Button variant="outlined" size="large" color="primary" onClick={() => {
-                          window.location.href = `${process.env.REACT_APP_API}/postInfo2xls?postId=${postId}&addAttach=${addAttach ? "Y" : "N"}`;
-                        }}>
-                          게시글 반응정보 Excel 다운받기
-                        </Button>
+                        <ButtonGroups postId={postId} value={state.value} addAttach={addAttach} postReactionUserList={state.postInfo.reactions.data} drawLotsWinnerEvent={drawLotsWinnerEvent} />
+                        <br />
                         <PostChart postReactionData={state.postReactionData} clickChart={clickChart} selection={state.selection} />
                       </TabPanel>
                       <TabPanel index={1} value={state.value}>
-                        <Button variant="outlined" size="large" color="primary" onClick={() => {
-                          window.location.href = `${process.env.REACT_APP_API}/postCommentInfo2xls?postId=${postId}&addAttach=${addAttach ? "Y" : "N"}`;
-                        }}>
-                          게시글의 댓글에 대한 반응정보 Excel 다운받기
-                        </Button>
+                        <ButtonGroups postId={postId} value={state.value} addAttach={addAttach} commentUserList={state.postComment} drawLotsWinnerEvent={drawLotsWinnerEvent} />
+                        <br />
                         <CommentChart commentReactionData={state.commentReactionData} clickChart={clickChart} selection={state.selection} />
                       </TabPanel>
                     </SwipeableViews>
