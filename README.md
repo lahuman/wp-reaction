@@ -24,6 +24,9 @@
 #### 게시물 댓글 상세 조회
 ![](./screenshot_3.png)
 
+#### 추첨자 조회
+![](./screenshot_4.png)
+
 ## Table of Contents 
 
 > 사용된 프로그램과 설정
