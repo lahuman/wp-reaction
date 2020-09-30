@@ -27,7 +27,7 @@ export const reactionReducer = (state, action) => {
         ...state,
         loading: false,
         modal: true,
-        popupData: { title: `:: 당첨자 목록 :: - 1등부터 순서대로`, avatars: action.avatars.map(a => ({ picture: a.picture.data.url, id: a.id, name: a.name })) }
+        popupData: { title: `당첨자::왼쪽 1등부터 오른쪽으로`, avatars: action.avatars.map(a => ({ picture: a.picture.data.url, id: a.id, name: a.name })) }
       };
     case 'SELECT_POST_INFO':
       return {
