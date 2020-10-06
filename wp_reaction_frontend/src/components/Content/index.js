@@ -224,12 +224,12 @@ export default function Content() {
                       index={state.value}
                     >
                       <TabPanel index={0} value={state.value}>
-                        <ButtonGroups postId={postId} value={state.value} addAttach={addAttach} postReactionUserList={state.postInfo.reactions.data} drawLotsWinnerEvent={drawLotsWinnerEvent} />
+                        <ButtonGroups postId={postId} value={state.value} addAttach={addAttach} postReactionUserList={state.postInfo.reactions.data} dispatch={dispatch} drawLotsWinnerEvent={drawLotsWinnerEvent} />
                         <br />
                         <PostChart postReactionData={state.postReactionData} clickChart={clickChart} selection={state.selection} />
                       </TabPanel>
                       <TabPanel index={1} value={state.value}>
-                        <ButtonGroups postId={postId} value={state.value} addAttach={addAttach} commentUserList={state.postComment} drawLotsWinnerEvent={drawLotsWinnerEvent} />
+                        <ButtonGroups postId={postId} value={state.value} addAttach={addAttach} commentUserList={state.postComment} dispatch={dispatch} drawLotsWinnerEvent={drawLotsWinnerEvent} />
                         <br />
                         <CommentChart commentReactionData={state.commentReactionData} clickChart={clickChart} selection={state.selection} />
                       </TabPanel>

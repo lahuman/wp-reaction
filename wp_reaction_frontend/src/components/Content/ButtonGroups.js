@@ -9,7 +9,7 @@ function getRandomIntInclusive(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min; //최댓값도 포함, 최솟값도 포함
 }
 
-export default ({ value, postId, addAttach, postReactionUserList, commentUserList, drawLotsWinnerEvent }) => {
+export default ({ value, postId, addAttach, postReactionUserList, commentUserList, drawLotsWinnerEvent, dispatch }) => {
     const [downloadUrl,] = React.useState(value === 0 ? `${process.env.REACT_APP_API}/postInfo2xls?postId=${postId}&addAttach=${addAttach ? "Y" : "N"}` : `${process.env.REACT_APP_API}/postCommentInfo2xls?postId=${postId}&addAttach=${addAttach ? "Y" : "N"}`);
     const [buttonText,] = React.useState(value === 0 ? '게시글에 대한 반응정보 Excel 다운받기' : '게시글의 댓글에 대한 반응정보 Excel 다운받기');
     const [drawLotsBtnTxt,] = React.useState(value === 0 ? '반응 추첨' : '댓글 추첨');
@@ -42,6 +42,7 @@ export default ({ value, postId, addAttach, postReactionUserList, commentUserLis
                             alert('추첨자 수가 응모한 수보다 큽니다.');
                             return;
                         }
+                        dispatch({ type: 'IS_LOADING' });
                         let winning = new Set();
                         let drawinglots = true;
                         while (drawinglots) {
