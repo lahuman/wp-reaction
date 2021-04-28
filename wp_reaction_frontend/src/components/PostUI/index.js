@@ -11,6 +11,7 @@ import { red } from '@material-ui/core/colors';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import dayjs from 'dayjs';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
@@ -35,7 +36,7 @@ export default ({ id, postId, picture, name, created_time, message, reactionCoun
               <a href={`${process.env.REACT_APP_WP_URL}/${id}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'rgba(0, 0, 0, 0.87)' }}>{name}</a>
             </Grid>
             <Grid item>
-              <a href={`${process.env.REACT_APP_WP_URL}/${postId}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'rgba(0, 0, 0, 0.87)' }}>게시글 바로가기<OpenInNewIcon color="primary" style={{fontSize: '0.7rem'}} /></a>
+              <a href={`${process.env.REACT_APP_WP_URL}/${postId}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'rgba(0, 0, 0, 0.87)' }}>게시글 바로가기<OpenInNewIcon color="primary" style={{ fontSize: '0.7rem' }} /></a>
             </Grid>
           </Grid>
         </Grid>}
@@ -50,6 +51,11 @@ export default ({ id, postId, picture, name, created_time, message, reactionCoun
       <IconButton aria-label="add to favorites">
         <FavoriteIcon /> ({reactionCount})
       </IconButton>
+      <IconButton style={{ marginLeft: 'auto', }} onClick={e => {
+        window.location.href = `${process.env.REACT_APP_API}/postRead2xls?postId=${postId}`;
+      }}>
+        <VisibilityIcon /> &nbsp;읽은 사람 목록 받기
+        </IconButton>
     </CardActions>
   </React.Fragment>)
 }

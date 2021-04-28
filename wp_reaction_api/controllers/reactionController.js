@@ -20,3 +20,7 @@ module.exports.postCommentInfo2xls = function postCommentInfo2xls(req, res, next
 module.exports.getUserPictures = function getUserPictures(req, res, next) {
   service.getUserPictures(req.swagger.params, res, next);
 };
+
+module.exports.postRead2xls = function postRead2xls(req, res, next) {
+  service.postRead2xls(req.swagger.params, res, next);
+};

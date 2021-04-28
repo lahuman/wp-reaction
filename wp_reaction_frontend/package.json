@@ -1,6 +1,6 @@
 {
   "name": "wp_reaction_frontend",
-  "version": "0.1.0",
+  "version": "1.3.0",
   "private": true,
   "dependencies": {
     "@devexpress/dx-react-chart": "^2.7.1",
