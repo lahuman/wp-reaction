@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default ({ id, postId, picture, name, created_time, message, reactionCount }) => {
+export default ({ id, postId, picture, name, created_time, message, reactionCount, isPost = false  }) => {
   const classes = useStyles();
   return (<React.Fragment>
     <CardHeader
