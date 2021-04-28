@@ -13,8 +13,7 @@ const __getPostInfo = async ({ postId, addAttach }) => {
     const url = `/${postId}?fields=created_time,name,link,caption,from,message,reactions.limit(${LIMIT})&limit=${LIMIT}`;
     const result = await wpApi({ url });
     if (result.error) {
-      res.send(result);
-      return;
+      return { error: { message: result.error }};
     }
 
     const callUserInfo = wpApi({ url: `/${result.from.id}?fields=id,name,picture` });
@@ -138,6 +137,17 @@ module.exports.getUserPictures = async (req, res, next) => {
     const userIdList = req.body.value;
     const userInfoList = await Promise.all(userIdList.map(u => wpApi({ url: `/${u}?fields=id,name,picture` })));
     res.send(userInfoList);
+  } catch (e) {
+    res.status(500).send({ error: { message: e.toString() } });
+  }
+};
+
+module.exports.postRead2xls = async (req, res, next) => {
+  try {
+    const url = `/${req.postId.value}?fields=seen.limit(10000)&limit=${LIMIT}`;
+    const result = await wpApi({ url });
+    const userInfoList = await Promise.all((result.seen.data && result.seen.data || []).map(wpUser =>  wpApi({ url: `/${wpUser.id}/?fields=name,email,department` })));
+    res.xls(`post_seen_${req.postId.value}.xlsx`, userInfoList);
   } catch (e) {
     res.status(500).send({ error: { message: e.toString() } });
   }

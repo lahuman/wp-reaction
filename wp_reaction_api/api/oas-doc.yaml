@@ -82,6 +82,33 @@ paths:
         '400':
           description: bad input parameter
           content: {}
+  /postRead2xls:
+    get:
+      x-router-controller: reactionController  
+      tags:
+        - reaction
+      summary: 게시글을 읽은 사람 정보를 엑셀로 내려준다.
+      description: |
+        읽은 사람의 이름, 이메일, 팀 정보를 
+      operationId: postRead2xls
+      parameters:
+        - in: query
+          name: postId
+          description: 게시글 ID
+          required: true
+          schema:
+            type: string
+            default: "451390832036693_920957698413335"
+      responses:
+        '200':
+          description: 게시글 코멘트 정보
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: bad input parameter
+          content: {}
   /postCommentInfo2xls:
     get:
       x-router-controller: reactionController  
