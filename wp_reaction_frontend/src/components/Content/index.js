@@ -207,7 +207,7 @@ export default function Content() {
               <React.Fragment>
                 {/* postInfo.picture && 정상 호출 되었을 경우 처리  */}
                 <Card className={classes.root}>
-                  <PostUI id={state.postInfo.from.id} postId={state.postInfo.id} picture={state.postInfo.picture} name={state.postInfo.from.name} created_time={state.postInfo.created_time} message={state.postInfo.message} reactionCount={(state.postInfo.reactions && state.postInfo.reactions.data.length || 0)} />
+                  <PostUI id={state.postInfo.from.id} postId={state.postInfo.id} picture={state.postInfo.picture} name={state.postInfo.from.name} created_time={state.postInfo.created_time} message={state.postInfo.message} reactionCount={(state.postInfo.reactions && state.postInfo.reactions.data.length || 0)} isPost={true}/>
                   <CardContent>
                     <Tabs
                       value={state.value}
